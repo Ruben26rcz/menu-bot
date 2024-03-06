@@ -1,0 +1,9 @@
+.buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.selectedOrders {
+  padding-bottom: 1rem;
+  color: rgb(107, 107, 107);
+}

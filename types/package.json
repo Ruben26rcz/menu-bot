@@ -1,0 +1,16 @@
+{
+  "name": "@hackathon/types",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Jose Manuel Cano <jmcano94@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "mongoose": "^6.10.0"
+  }
+}
