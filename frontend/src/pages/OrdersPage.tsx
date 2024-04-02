@@ -3,7 +3,7 @@ import styles from './OrdersPage.module.css';
 
 function OrdersPage() {
   return (
-    <main className={styles.main}>
+    <main className={`wrapper ${styles.main}`}>
       <OrdersTable />
     </main>
   );

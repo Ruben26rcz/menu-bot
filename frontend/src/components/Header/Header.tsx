@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom';
 import { HomeOutlined, ReadOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
-import Logo from '../../../public/icon.svg';
-import styles from './sidebar.module.css';
+import Icon from '../../../public/icon.svg';
+import styles from './header.module.css';
 
 const items: MenuProps['items'] = [
   {
@@ -26,11 +26,13 @@ const items: MenuProps['items'] = [
 const Sidebar: React.FC = () => {
   return (
     <header className={styles.header}>
-      <div>
-        <img className={styles.logo} src={Logo} alt='MenuBot logo' />
-        <span className={styles.sidebarTitle}>MenuBot</span>
+      <div className={`wrapper ${styles.headerContent}`}>
+        <div className={styles.logo}>
+          <img className={styles.icon} src={Icon} alt='MenuBot icon' />
+          <span className={styles.sidebarTitle}>MenuBot</span>
+        </div>
+        <Menu defaultSelectedKeys={['home']} mode='horizontal' items={items} />
       </div>
-      <Menu defaultSelectedKeys={['home']} mode='inline' items={items} />
     </header>
   );
 };

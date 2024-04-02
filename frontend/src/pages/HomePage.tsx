@@ -3,7 +3,7 @@ import CountUp from 'react-countup';
 import { useState, useEffect } from 'react';
 import { api } from '../_utils/api';
 import { Statistic } from 'antd';
-import { Menu, PopulatedOrder } from '../../../types/src/index';
+import { Menu, Order } from '../../../types/src/index';
 
 const formatter = (value: number | string) => {
   if (typeof value === 'number') {
@@ -13,7 +13,8 @@ const formatter = (value: number | string) => {
 
 function HomePage() {
   const [menus, setMenus] = useState<Menu[]>([]);
-  const [orders, setOrders] = useState<PopulatedOrder[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const pendingOrders = orders.filter((order) => !order.completed).length;
 
   const getMenus = async (): Promise<void> => {
     try {
@@ -26,7 +27,7 @@ function HomePage() {
 
   const getOrders = async (): Promise<void> => {
     try {
-      const response = await api.get<PopulatedOrder[]>('/orders');
+      const response = await api.get<Order[]>('/orders');
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -39,11 +40,34 @@ function HomePage() {
   }, []);
   return (
     <main className={styles.main}>
-      <Statistic title='Menus' value={menus.length} formatter={formatter} />
-      <div>
-        <Statistic title='Orders' value={orders.length} formatter={formatter} />
-        <p className={styles.pendingOrders}>🕐 Pending: {orders.filter((order) => !order.completed).length}</p>
-      </div>
+      <section className={`wrapper ${styles.section}`}>
+        <Statistic className={styles.menus} title='Menus' value={menus.length} formatter={formatter} prefix={'🍽️'} />
+        <div className={styles.orders}>
+          <Statistic
+            className={styles.totalOrders}
+            title='Total Orders'
+            value={orders.length}
+            formatter={formatter}
+            prefix={'📦'}
+          />
+          <div className={styles.ordersDetail}>
+            <Statistic
+              className={pendingOrders > 0 ? styles.pendingOrders : styles.completedOrders}
+              title='Pending Orders'
+              value={pendingOrders}
+              formatter={formatter}
+              prefix={'🕐'}
+            />
+            <Statistic
+              className={styles.completedOrders}
+              title='Completed Orders'
+              value={orders.filter((order) => order.completed).length}
+              formatter={formatter}
+              prefix={'✅'}
+            />
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

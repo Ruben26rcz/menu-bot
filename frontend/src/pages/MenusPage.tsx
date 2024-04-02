@@ -3,7 +3,7 @@ import styles from './MenusPage.module.css';
 
 function MenusPage() {
   return (
-    <main className={styles.main}>
+    <main className={`wrapper ${styles.main}`}>
       <MenuList />
     </main>
   );

@@ -1,5 +1,7 @@
 .main {
-  width: 100%;
-  margin: auto;
-  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100svh - 47px);
+  padding-inline: 1.5rem;
 }

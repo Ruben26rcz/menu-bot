@@ -1,22 +1,42 @@
-.main > * {
-  min-width: 200px;
-  min-height: 160px;
+.menus,
+.orders {
   background-color: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
+  min-width: 200px;
+  padding: 1rem;
+  border-radius: 1.5rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-.main {
+.menus {
+  margin-bottom: 1rem;
+}
+.section {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
+  max-width: 600px;
+}
+.pendingOrders,
+.completedOrders {
+  background-color: #f6f6f6;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e8e8e8;
+  width: 100%;
 }
 
 .pendingOrders {
-  padding-top: 0.5rem;
-  font-size: 0.9rem;
-  color: rgb(189, 189, 189);
+  background-color: #e3bf634c;
+  border: 1px solid #e3bf63;
+}
+
+.main {
+  height: calc(100svh - 47px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ordersDetail {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
 }

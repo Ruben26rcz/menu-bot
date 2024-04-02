@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import Sidebar from './components/Sidebar/Sidebar';
+import Header from './components/Header/Header';
 import HomePage from './pages/HomePage';
 import MenusPage from './pages/MenusPage';
 import OrdersPage from './pages/OrdersPage';
@@ -8,7 +8,7 @@ import styles from './app.module.css';
 function App() {
   return (
     <div className={styles.app}>
-      <Sidebar />
+      <Header />
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/menus' element={<MenusPage />} />

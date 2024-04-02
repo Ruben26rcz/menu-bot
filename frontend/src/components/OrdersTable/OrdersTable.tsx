@@ -1,57 +1,108 @@
 import { Table, Tag, Button, message } from 'antd';
 import type { TableColumnsType } from 'antd';
-import { PopulatedOrder } from '../../../../types/src/index';
+import { Order } from '../../../../types/src/index';
 import { useState, useEffect } from 'react';
 import { api } from '../../_utils/api';
 import styles from './OrdersTable.module.css';
 
 const OrdersTable: React.FC = () => {
-  const [orders, setOrders] = useState<PopulatedOrder[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const getOrders = async (): Promise<void> => {
     try {
-      const response = await api.get<PopulatedOrder[]>('/orders');
+      const response = await api.get<Order[]>('/orders');
       setOrders(response.data);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
   };
-
-  const markAsCompleted = async (ids: string[]): Promise<void> => {
+  const completeOrders = async (): Promise<void> => {
     try {
-      // Optimistically update UI
-      setOrders((prevOrders) =>
-        prevOrders.map((order) => (ids.includes(order.id) ? { ...order, completed: true } : order))
-      );
-      // Make API call to mark orders as completed
-      await Promise.all(ids.map((id) => api.patch(`/orders/${id}`, { completed: true })));
+      // Prepare an array to store promises for each order update request
+      const updatePromises: Promise<any>[] = [];
+
+      // Create a new array to store updated orders
+      const updatedOrders: any = orders.map((order) => {
+        if (selectedRowKeys.includes(order._id) && !order.completed) {
+          // Add the update request to the array
+          updatePromises.push(api.patch(`/orders/${order._id}`, { completed: true }));
+          // Return the updated order
+          return { ...order, completed: true };
+        }
+        // Return the order without modification
+        return order;
+      });
+
+      // Update the state with the new array of orders
+      setOrders(updatedOrders);
+      setSelectedRowKeys([]);
+
+      // Wait for all update requests to complete
+      await Promise.all(updatePromises);
+      const completeOrders = async (): Promise<void> => {
+        try {
+          // Prepare an array to store promises for each order update request
+          const updatePromises: Promise<any>[] = [];
+
+          // Create a new array to store updated orders
+          const updatedOrders: any = orders.map((order) => {
+            if (selectedRowKeys.includes(order._id) && !order.completed) {
+              // Add the update request to the array
+              updatePromises.push(api.patch(`/orders/${order._id}`, { completed: true }));
+              // Return the updated order
+              return { ...order, completed: true };
+            }
+            // Return the order without modification
+            return order;
+          });
+
+          // Update the state with the new array of orders
+          setOrders(updatedOrders);
+
+          // Wait for all update requests to complete
+          await Promise.all(updatePromises);
+
+          // Reset selectedRowKeys after completing the operation
+          setSelectedRowKeys([]);
+
+          // Display success message
+          message.success('Orders marked as completed');
+        } catch (error) {
+          console.error('Error marking orders as completed:', error);
+          // Revert changes in case of error
+          getOrders();
+          message.error('Failed to mark orders as completed');
+        }
+      };
+
+      // Display success message
       message.success('Orders marked as completed');
     } catch (error) {
+      console.error('Error marking orders as completed:', error);
       // Revert changes in case of error
-      message.error('Error marking orders as completed');
       getOrders();
+      message.error('Failed to mark orders as completed');
     }
   };
 
-  useEffect(() => {
-    getOrders();
-  }, []);
-
   const deleteCompletedOrders = async (): Promise<void> => {
-    const completedOrderIds = selectedRowKeys.filter((key) =>
-      orders.find((order) => order.id === key && order.completed)
-    );
-    if (completedOrderIds.length === 0) {
-      message.error('No completed orders selected for deletion');
-      return;
-    }
-
     try {
+      // Filter out completed orders
+      const completedOrderIds = orders.filter((order) => order.completed).map((order) => order._id);
+
+      if (completedOrderIds.length === 0) {
+        message.error('No completed orders selected for deletion');
+        return;
+      }
+
+      // Delete completed orders on the server
       await Promise.all(completedOrderIds.map((id) => api.delete(`/orders/${id}`)));
-      const remainingOrders = orders.filter((order) => !completedOrderIds.includes(order.id));
-      setOrders(remainingOrders);
+
+      // Update the state to remove completed orders from the list
+      setOrders((prevOrders) => prevOrders.filter((order) => !completedOrderIds.includes(order._id)));
+
+      // Display success message
       message.success('Completed orders deleted successfully');
     } catch (error) {
       console.error('Error deleting completed orders:', error);
@@ -59,26 +110,22 @@ const OrdersTable: React.FC = () => {
     }
   };
 
-  const start = async () => {
-    setLoading(true);
-    await markAsCompleted(selectedRowKeys as string[]);
-    setSelectedRowKeys([]);
-    setLoading(false);
-  };
-
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
     console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const hasSelected = selectedRowKeys.length > 0;
-  const hasCompletedSelected = selectedRowKeys.some((key) => orders.find((order) => order.id === key)?.completed);
 
-  const columns: TableColumnsType<PopulatedOrder> = [
+  useEffect(() => {
+    getOrders();
+  }, []);
+
+  const hasSelected = selectedRowKeys.length > 0;
+  const columns: TableColumnsType<Order> = [
     {
       title: 'User',
       dataIndex: ['chatUser', 'name'],
@@ -101,20 +148,25 @@ const OrdersTable: React.FC = () => {
 
   return (
     <>
-      <Table rowKey='id' rowSelection={rowSelection} columns={columns} dataSource={orders} />
+      <Table rowKey={(record) => record._id} rowSelection={rowSelection} columns={columns} dataSource={orders} />
       <div>
         <div className={styles.selectedOrders}>
           {hasSelected ? `Selected ${selectedRowKeys.length} items` : 'Select orders from the table'}
         </div>
         <div className={styles.buttons}>
-          <Button type='primary' onClick={start} disabled={!hasSelected} loading={loading}>
+          <Button
+            type='primary'
+            onClick={completeOrders}
+            disabled={!selectedRowKeys.some((key) => orders.find((order) => order._id === key && !order.completed))}
+          >
             Mark as completed
           </Button>
           <Button
             type='primary'
             onClick={deleteCompletedOrders}
-            disabled={!hasCompletedSelected}
+            disabled={orders.filter((order) => order.completed).length === 0}
             style={{ marginLeft: 8 }}
+            danger
           >
             Delete completed
           </Button>

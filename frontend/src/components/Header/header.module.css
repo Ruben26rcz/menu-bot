@@ -1,0 +1,27 @@
+.header {
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgb(239, 239, 239);
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+}
+.headerContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 3rem;
+}
+.logo {
+  display: flex;
+  gap: 0.5rem;
+}
+.icon {
+  max-width: 1.5rem;
+}
+.sidebarTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #000000ae;
+}
