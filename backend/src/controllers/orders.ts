@@ -25,7 +25,7 @@ const patchOrder = async (req, res) => {
 
     chatBot.telegram.sendMessage(
       orderUpdated.chatUser.chatId,
-      `Your order ${orderUpdated._id} has been updated to ${orderUpdated.completed ? 'completed' : 'pending'}`
+      `Your order ${orderUpdated._id} has been updated to ${orderUpdated.completed ? '✅ Completed' : '⏱️ Pending'}`
     );
     return res.status(200).json(orderUpdated);
   } catch (error) {

@@ -31,7 +31,7 @@ const Sidebar: React.FC = () => {
           <img className={styles.icon} src={Icon} alt='MenuBot icon' />
           <span className={styles.sidebarTitle}>MenuBot</span>
         </div>
-        <Menu defaultSelectedKeys={['home']} mode='horizontal' items={items} />
+        <Menu defaultSelectedKeys={['orders']} mode='horizontal' items={items} />
       </div>
     </header>
   );

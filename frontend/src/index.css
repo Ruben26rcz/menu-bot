@@ -17,7 +17,7 @@ body {
 }
 
 :where(.wrapper) {
-  max-width: 1024px;
+  max-width: 670px;
   padding-inline: 2rem;
   margin-inline: auto;
 }
